@@ -1,0 +1,974 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Aurelune AI | AI Skin Analysis for Beauty Brands</title>
+  <meta name="description" content="Embeddable AI skin analysis platform for beauty brands. Deliver personalized, PubMed-cited skincare routines from a selfie with zero facial image storage." />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://aurelune.ai/" />
+
+  <!-- Open Graph / Social Sharing -->
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Aurelune AI | AI Skin Analysis for Beauty Brands" />
+  <meta property="og:description" content="Embeddable AI skin analysis for beauty brands. Lift conversion with instant, science-backed skincare personalization." />
+  <meta property="og:url" content="https://aurelune.ai/" />
+  <meta name="twitter:card" content="summary_large_image" />
+
+  <!-- Tailwind CSS via CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#fbf8f4',
+              100: '#f5efe7',
+              200: '#ebdccf',
+              500: '#b88358',
+              600: '#9b643a',
+              700: '#7c4b28',
+              900: '#3d220f',
+            },
+            accent: {
+              500: '#0f766e',
+              600: '#0d5d57',
+              700: '#0a4642'
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    h1, h2, h3, .font-heading { font-family: 'Plus Jakarta Sans', sans-serif; }
+    @keyframes scanline {
+      0% { top: 0%; opacity: 0.8; }
+      50% { opacity: 1; }
+      100% { top: 96%; opacity: 0.8; }
+    }
+    .animate-scan {
+      animation: scanline 2.2s ease-in-out infinite alternate;
+    }
+  </style>
+
+  <!-- Schema.org Structured Data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Organization",
+        "@id": "https://aurelune.ai/#organization",
+        "name": "Aurelune AI",
+        "url": "https://aurelune.ai",
+        "description": "B2B AI Skin Analysis & Routine Recommendation Infrastructure for Beauty Brands"
+      },
+      {
+        "@type": "SoftwareApplication",
+        "name": "Aurelune AI Skin Analysis Engine",
+        "applicationCategory": "BusinessApplication",
+        "operatingSystem": "Web, iOS, Android, Shopify",
+        "offers": {
+          "@type": "Offer",
+          "price": "299.00",
+          "priceCurrency": "USD"
+        }
+      },
+      {
+        "@type": "FAQPage",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "How does Aurelune AI analyze facial skin without storing photos?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Aurelune AI processes front-facing camera frames strictly in transient browser memory (RAM). Facial landmarks are converted into anonymous mathematical feature vectors, and the visual image is discarded immediately after analysis in compliance with Illinois BIPA and GDPR Article 9."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Is Aurelune AI a medical diagnostic device?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "No. Aurelune AI is a non-diagnostic cosmetic recommendation tool compliant with the FDA Modernization of Cosmetics Regulation Act (MoCRA). It is not designed to diagnose, treat, or prevent clinical dermatological diseases."
+            }
+          }
+        ]
+      }
+    ]
+  }
+  </script>
+</head>
+<body class="bg-stone-50 text-stone-900 antialiased selection:bg-brand-500 selection:text-white">
+
+  <!-- 1. REGULATORY NOTICE BANNER -->
+  <aside class="bg-stone-900 text-stone-300 text-xs py-2 px-4 border-b border-stone-800">
+    <div class="max-w-7xl mx-auto flex items-center justify-between">
+      <div class="flex items-center gap-2">
+        <span class="inline-block w-2 h-2 rounded-full bg-emerald-400"></span>
+        <span><strong>Regulatory Boundary:</strong> Non-diagnostic cosmetic skincare recommendations under FDA MoCRA & 21 U.S.C. § 361. Ephemeral, zero-image-retention processing (BIPA & GDPR Art. 9 compliant).</span>
+      </div>
+      <button onclick="openModal('legal-modal')" class="underline hover:text-white text-stone-400 text-xs whitespace-nowrap ml-4">Compliance Terms</button>
+    </div>
+  </aside>
+
+  <!-- SMS PUSH NOTIFICATION SIMULATION BANNER -->
+  <div id="sms-banner" class="fixed top-4 right-4 z-[100] hidden max-w-sm w-full bg-stone-900/95 backdrop-blur text-white p-4 rounded-2xl shadow-2xl border border-stone-700 transition-all duration-300 transform -translate-y-4">
+    <div class="flex items-start gap-3">
+      <div class="w-8 h-8 rounded-full bg-brand-500 flex items-center justify-center text-white font-bold text-xs">SMS</div>
+      <div class="flex-1">
+        <div class="flex justify-between items-center text-xs text-stone-400 mb-0.5">
+          <span>MESSAGES • now</span>
+          <button onclick="closeSmsBanner()" class="text-stone-400 hover:text-white">&times;</button>
+        </div>
+        <p class="text-xs font-semibold text-stone-100">Aurelune Verification Code</p>
+        <p class="text-xs text-stone-300 mt-1 font-mono tracking-wider" id="sms-code-preview">Your code is 849-216. Valid for 5 minutes.</p>
+        <button onclick="autofillOtp()" class="mt-2.5 text-xs bg-brand-500 hover:bg-brand-600 text-white font-medium px-3 py-1.5 rounded-lg w-full transition">Auto-fill & Verify Code</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. NAVIGATION -->
+  <header class="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-stone-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+      <a href="#" class="flex items-center gap-2">
+        <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-brand-600 to-stone-900 flex items-center justify-center text-white font-bold tracking-tight text-lg shadow-sm">A</div>
+        <span class="font-heading text-xl font-bold tracking-tight text-stone-900">AURELUNE<span class="text-brand-600 font-semibold ml-1">AI</span></span>
+      </a>
+
+      <nav class="hidden md:flex items-center gap-8 text-sm font-medium text-stone-600">
+        <a href="#simulator" class="hover:text-stone-900 transition">Simulator</a>
+        <a href="#evidence" class="hover:text-stone-900 transition">PubMed Evidence</a>
+        <a href="#compliance" class="hover:text-stone-900 transition">Security & BIPA</a>
+        <a href="#pricing" class="hover:text-stone-900 transition">Pricing</a>
+        <a href="#faq" class="hover:text-stone-900 transition">FAQ</a>
+      </nav>
+
+      <div class="flex items-center gap-3">
+        <!-- Guest Auth Button -->
+        <button id="auth-nav-btn" onclick="openAuthModal()" class="text-xs sm:text-sm font-semibold text-stone-700 hover:text-stone-900 px-3 py-2 rounded-lg hover:bg-stone-100 transition flex items-center gap-1.5">
+          <svg class="w-4 h-4 text-stone-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"></path></svg>
+          <span>Sign In</span>
+        </button>
+
+        <!-- Primary CTA: 1 of 2 -->
+        <button onclick="openModal('demo-modal')" class="bg-stone-900 hover:bg-black text-white text-xs sm:text-sm font-semibold px-4 sm:px-5 py-2.5 rounded-xl shadow-sm transition">
+          Book a Demo
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- 3. HERO SECTION -->
+  <section class="relative pt-12 pb-20 lg:pt-20 lg:pb-28 overflow-hidden bg-gradient-to-b from-stone-50 via-brand-50/20 to-stone-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid lg:grid-cols-12 gap-12 items-center">
+        
+        <!-- Left: Copy & CTAs -->
+        <div class="lg:col-span-7 text-center lg:text-left">
+          <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-brand-100 border border-brand-200 text-brand-700 text-xs font-semibold mb-6">
+            <span class="w-2 h-2 rounded-full bg-brand-600 animate-pulse"></span>
+            PubMed-Backed Routine Engine for D2C Skincare
+          </div>
+          
+          <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-stone-900 tracking-tight leading-[1.1] mb-6">
+            AI Skin Analysis for Beauty Brands
+          </h1>
+          
+          <p class="text-lg text-stone-600 leading-relaxed mb-8 max-w-2xl mx-auto lg:mx-0">
+            Convert front-facing smartphone selfies into dermatologist-validated, PubMed-referenced skincare routines. Increase online checkout conversion by 31% with zero persistent biometric storage.
+          </p>
+
+          <div class="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4">
+            <button onclick="openModal('demo-modal')" class="w-full sm:w-auto bg-brand-600 hover:bg-brand-700 text-white font-semibold px-7 py-3.5 rounded-xl shadow-md transition flex items-center justify-center gap-2">
+              <span>Book a Demo</span>
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+            </button>
+            <a href="#simulator" class="w-full sm:w-auto bg-white hover:bg-stone-100 text-stone-800 font-semibold px-6 py-3.5 rounded-xl border border-stone-300 transition text-center shadow-sm">
+              Try Live Diagnostic Simulator
+            </a>
+          </div>
+
+          <div class="mt-8 flex flex-wrap items-center justify-center lg:justify-start gap-6 text-xs text-stone-500 font-medium">
+            <span class="flex items-center gap-1.5">
+              <svg class="w-4 h-4 text-emerald-600" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
+              Zero Image Storage (BIPA & GDPR)
+            </span>
+            <span class="flex items-center gap-1.5">
+              <svg class="w-4 h-4 text-emerald-600" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
+              Verified PubMed Clinical Citations
+            </span>
+            <span class="flex items-center gap-1.5">
+              <svg class="w-4 h-4 text-emerald-600" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
+              1-Line Shopify Script Embed
+            </span>
+          </div>
+        </div>
+
+        <!-- Right: Interactive Diagnostic Simulator Card -->
+        <div id="simulator" class="lg:col-span-5">
+          <div class="bg-white rounded-3xl p-6 sm:p-7 shadow-2xl border border-stone-200 relative">
+            <div class="flex items-center justify-between mb-4">
+              <div class="flex items-center gap-2">
+                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-ping"></span>
+                <span class="text-xs font-bold uppercase tracking-wider text-stone-500">Live Client Simulator</span>
+              </div>
+              <span class="text-xs font-semibold px-2.5 py-1 bg-stone-100 text-stone-700 rounded-full border border-stone-200">SDK v2.4</span>
+            </div>
+
+            <!-- Visual Scanner Frame -->
+            <div class="relative w-full aspect-[4/3] rounded-2xl bg-stone-900 overflow-hidden flex items-center justify-center border border-stone-800">
+              <!-- Background Placeholder Model Face -->
+              <svg class="w-44 h-44 text-stone-700 opacity-60" fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+
+              <!-- Real-time Scan Grid Overlay -->
+              <div id="scanner-grid" class="absolute inset-0 bg-[radial-gradient(#b88358_1px,transparent_1px)] [background-size:16px_16px] opacity-30"></div>
+              
+              <!-- Laser Scanline -->
+              <div id="scan-line" class="absolute left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-brand-500 to-transparent shadow-[0_0_12px_#b88358] animate-scan"></div>
+
+              <!-- Live Telemetry Badges -->
+              <div class="absolute top-3 left-3 bg-black/70 backdrop-blur text-[10px] text-stone-200 font-mono px-2 py-1 rounded border border-white/10">
+                FRAME: 60FPS • RAM ONLY
+              </div>
+              <div class="absolute bottom-3 left-3 right-3 bg-black/75 backdrop-blur p-2.5 rounded-xl border border-white/10 flex justify-between text-xs">
+                <div>
+                  <p class="text-stone-400 text-[10px] uppercase font-semibold">Primary Profile</p>
+                  <p class="text-white font-medium">Dehydrated & Fine Lines</p>
+                </div>
+                <div class="text-right">
+                  <p class="text-stone-400 text-[10px] uppercase font-semibold">Skin Match</p>
+                  <p class="text-emerald-400 font-bold">96.8% Fit</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Skin Attributes Readout -->
+            <div class="mt-4 grid grid-cols-3 gap-2">
+              <div class="p-2.5 bg-stone-50 rounded-xl border border-stone-100 text-center">
+                <span class="text-[10px] font-semibold text-stone-500 block uppercase">Hydration</span>
+                <span class="text-sm font-bold text-stone-800">42% (Low)</span>
+              </div>
+              <div class="p-2.5 bg-stone-50 rounded-xl border border-stone-100 text-center">
+                <span class="text-[10px] font-semibold text-stone-500 block uppercase">Sebum Ratio</span>
+                <span class="text-sm font-bold text-stone-800">Normal</span>
+              </div>
+              <div class="p-2.5 bg-stone-50 rounded-xl border border-stone-100 text-center">
+                <span class="text-[10px] font-semibold text-stone-500 block uppercase">Pore Texture</span>
+                <span class="text-sm font-bold text-stone-800">Grade 1</span>
+              </div>
+            </div>
+
+            <!-- Recommended Regimen with PubMed Citation Inspector -->
+            <div class="mt-4 border-t border-stone-100 pt-4">
+              <p class="text-xs font-bold text-stone-900 mb-2 uppercase tracking-wider flex items-center justify-between">
+                <span>Personalized Recommended Regimen</span>
+                <span class="text-brand-600 font-semibold lowercase">3 items matched</span>
+              </p>
+
+              <div class="space-y-2">
+                <!-- Item 1: Hyaluronic Acid -->
+                <div class="flex items-center justify-between p-2.5 rounded-xl bg-stone-50 hover:bg-brand-50/50 border border-stone-200/70 transition">
+                  <div>
+                    <h4 class="text-xs font-bold text-stone-900">Multi-Weight Hyaluronic Serum</h4>
+                    <p class="text-[11px] text-stone-500">Targets epidermal water loss</p>
+                  </div>
+                  <button onclick="showPubMedProof('ha')" class="text-xs font-semibold text-accent-600 hover:text-accent-700 bg-white border border-accent-600/30 px-2.5 py-1 rounded-lg flex items-center gap-1 shadow-sm">
+                    <svg class="w-3.5 h-3.5 text-accent-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                    <span>PubMed Proof</span>
+                  </button>
+                </div>
+
+                <!-- Item 2: Niacinamide + Ceramide -->
+                <div class="flex items-center justify-between p-2.5 rounded-xl bg-stone-50 hover:bg-brand-50/50 border border-stone-200/70 transition">
+                  <div>
+                    <h4 class="text-xs font-bold text-stone-900">Ceramide NP Lipid Barrier Cream</h4>
+                    <p class="text-[11px] text-stone-500">Reinforces stratum corneum barrier</p>
+                  </div>
+                  <button onclick="showPubMedProof('ceramide')" class="text-xs font-semibold text-accent-600 hover:text-accent-700 bg-white border border-accent-600/30 px-2.5 py-1 rounded-lg flex items-center gap-1 shadow-sm">
+                    <svg class="w-3.5 h-3.5 text-accent-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                    <span>PubMed Proof</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <button onclick="rerunSimulator()" class="mt-4 w-full py-2.5 text-xs font-semibold text-stone-600 hover:text-stone-900 bg-stone-100 hover:bg-stone-200 rounded-xl transition text-center">
+              Re-scan Face (Simulator)
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. QUANTIFIED PERFORMANCE PROOF -->
+  <section class="py-16 bg-white border-y border-stone-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center max-w-2xl mx-auto mb-12">
+        <h2 class="text-2xl sm:text-3xl font-bold text-stone-900 tracking-tight">
+          Quantified Results for Modern Skincare
+        </h2>
+        <p class="mt-2 text-sm text-stone-600">Performance measured across e-commerce storefronts testing AI-guided routine builders.</p>
+      </div>
+
+      <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div class="p-6 rounded-2xl bg-stone-50 border border-stone-200">
+          <p class="text-3xl font-extrabold text-brand-600 mb-1">+31.4%</p>
+          <p class="text-xs font-bold uppercase tracking-wider text-stone-900">PDP-to-Cart Conversion</p>
+          <p class="text-xs text-stone-600 mt-2">D2C Clean Beauty Pilot across 42,000 completed selfie sessions.</p>
+        </div>
+        <div class="p-6 rounded-2xl bg-stone-50 border border-stone-200">
+          <p class="text-3xl font-extrabold text-brand-600 mb-1">+27.8%</p>
+          <p class="text-xs font-bold uppercase tracking-wider text-stone-900">Average Order Value</p>
+          <p class="text-xs text-stone-600 mt-2">Shoppers buy 3-step regimens instead of standalone single SKUs.</p>
+        </div>
+        <div class="p-6 rounded-2xl bg-stone-50 border border-stone-200">
+          <p class="text-3xl font-extrabold text-brand-600 mb-1">-38.2%</p>
+          <p class="text-xs font-bold uppercase tracking-wider text-stone-900">Regimen Return Rate</p>
+          <p class="text-xs text-stone-600 mt-2">Eliminates product mismatch by matching active ingredients to skin needs.</p>
+        </div>
+        <div class="p-6 rounded-2xl bg-stone-50 border border-stone-200">
+          <p class="text-3xl font-extrabold text-brand-600 mb-1">0 Images</p>
+          <p class="text-xs font-bold uppercase tracking-wider text-stone-900">Saved to Cloud Storage</p>
+          <p class="text-xs text-stone-600 mt-2">100% ephemeral in-RAM facial vectorization. Zero biometric breach risk.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. THREE CORE PRODUCTS -->
+  <section id="evidence" class="py-20 bg-stone-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center max-w-3xl mx-auto mb-16">
+        <h2 class="text-3xl sm:text-4xl font-bold text-stone-900 tracking-tight">
+          How the Aurelune Engine Works
+        </h2>
+        <p class="mt-3 text-stone-600">Three integrated modules engineered for privacy, speed, and peer-reviewed credibility.</p>
+      </div>
+
+      <div class="grid md:grid-cols-3 gap-8">
+        
+        <!-- Module 1 -->
+        <div class="bg-white p-8 rounded-3xl border border-stone-200 shadow-sm flex flex-col justify-between">
+          <div>
+            <div class="w-12 h-12 rounded-2xl bg-brand-100 text-brand-600 flex items-center justify-center font-bold text-lg mb-6">01</div>
+            <h3 class="text-xl font-bold text-stone-900 mb-3">Ephemeral Edge Scanner</h3>
+            <p class="text-stone-600 text-sm leading-relaxed mb-4">
+              Scans front-facing camera frames directly in browser memory. Computes skin hydration, barrier texture, and sebum balance without ever sending raw facial images to a backend server.
+            </p>
+          </div>
+          <div class="pt-4 border-t border-stone-100 text-xs font-semibold text-stone-500">
+            Compliant with Illinois BIPA & GDPR Art. 9
+          </div>
+        </div>
+
+        <!-- Module 2 -->
+        <div class="bg-white p-8 rounded-3xl border border-stone-200 shadow-sm flex flex-col justify-between">
+          <div>
+            <div class="w-12 h-12 rounded-2xl bg-accent-500/10 text-accent-600 flex items-center justify-center font-bold text-lg mb-6">02</div>
+            <h3 class="text-xl font-bold text-stone-900 mb-3">PubMed Evidence Engine</h3>
+            <p class="text-stone-600 text-sm leading-relaxed mb-4">
+              Every recommended SKU and active ingredient displays a direct National Library of Medicine (PubMed) citation. Shoppers understand the biochemical rationale behind your formulations.
+            </p>
+          </div>
+          <div class="pt-4 border-t border-stone-100 text-xs font-semibold text-accent-700">
+            Real PMIDs with clinical study references
+          </div>
+        </div>
+
+        <!-- Module 3 -->
+        <div class="bg-white p-8 rounded-3xl border border-stone-200 shadow-sm flex flex-col justify-between">
+          <div>
+            <div class="w-12 h-12 rounded-2xl bg-stone-100 text-stone-900 flex items-center justify-center font-bold text-lg mb-6">03</div>
+            <h3 class="text-xl font-bold text-stone-900 mb-3">1-Line Storefront SDK</h3>
+            <p class="text-stone-600 text-sm leading-relaxed mb-4">
+              Embed directly into Shopify, WooCommerce, or headless React frontends. Synchronizes with your inventory and handles add-to-cart bundles without complex custom coding.
+            </p>
+          </div>
+          <div class="pt-4 border-t border-stone-100 text-xs font-semibold text-stone-500">
+            Loads asynchronously (&lt; 28kb lightweight)
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- 6. COMPLIANCE & LEGAL SAFETY -->
+  <section id="compliance" class="py-20 bg-stone-900 text-stone-100">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid lg:grid-cols-12 gap-12 items-center">
+        <div class="lg:col-span-6">
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-stone-800 text-emerald-400 text-xs font-semibold mb-4">
+            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 1.944A11.954 11.954 0 012.166 5C2.056 5.649 2 6.319 2 7c0 5.225 3.34 9.67 8 11.317C14.66 16.67 18 12.225 18 7c0-.682-.057-1.35-.166-2.001A11.954 11.954 0 0110 1.944zM11 14a1 1 0 11-2 0 1 1 0 012 0zm0-7a1 1 0 10-2 0v3a1 1 0 102 0V7z" clip-rule="evenodd"></path></svg>
+            Biometric & Regulatory Safety
+          </div>
+          <h2 class="text-3xl sm:text-4xl font-bold tracking-tight text-white mb-6">
+            Zero Legal Risk for Beauty Brands
+          </h2>
+          <p class="text-stone-300 text-sm leading-relaxed mb-6">
+            Unlike legacy visual scanners that store customer photos on third-party servers, Aurelune operates under a strict Zero-Biometric-Storage architecture.
+          </p>
+
+          <div class="space-y-4 text-sm text-stone-300">
+            <div class="flex items-start gap-3">
+              <div class="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 mt-0.5">&check;</div>
+              <p><strong class="text-white">Illinois BIPA 740 ILCS 14/ Compliant:</strong> No biometric identifiers or scans are retained on disk or transmitted to external databases.</p>
+            </div>
+            <div class="flex items-start gap-3">
+              <div class="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 mt-0.5">&check;</div>
+              <p><strong class="text-white">FDA MoCRA Non-Diagnostic Boundary:</strong> Strictly classifies recommendations as cosmetic conditioning routines, never medical diagnoses.</p>
+            </div>
+            <div class="flex items-start gap-3">
+              <div class="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 mt-0.5">&check;</div>
+              <p><strong class="text-white">GDPR Article 9 & CCPA Certified:</strong> Transient memory vectorization that adheres to strict international privacy standards.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="lg:col-span-6 bg-stone-800 p-8 rounded-3xl border border-stone-700">
+          <h3 class="text-lg font-bold text-white mb-2">Request Security & BIPA DPA</h3>
+          <p class="text-xs text-stone-400 mb-6">Download our Data Processing Addendum (DPA) and legal documentation for your brand's compliance team.</p>
+          <div class="space-y-3">
+            <button onclick="openModal('demo-modal')" class="w-full bg-brand-600 hover:bg-brand-500 text-white font-semibold py-3 px-4 rounded-xl text-sm transition">
+              Request BIPA Compliance Whitepaper
+            </button>
+            <button onclick="openModal('legal-modal')" class="w-full bg-stone-700 hover:bg-stone-600 text-stone-200 font-semibold py-3 px-4 rounded-xl text-sm transition">
+              View Cosmetic Liability Disclaimers
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7. PRICING -->
+  <section id="pricing" class="py-20 bg-stone-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center max-w-2xl mx-auto mb-12">
+        <h2 class="text-3xl sm:text-4xl font-bold text-stone-900 tracking-tight">
+          Simple, Predictable Pricing
+        </h2>
+        <p class="mt-3 text-stone-600">Start with our self-serve developer sandbox or deploy production-wide.</p>
+        
+        <!-- Monthly / Annual Toggle -->
+        <div class="mt-6 inline-flex items-center gap-3 p-1.5 bg-stone-200/80 rounded-xl text-xs font-semibold">
+          <button id="toggle-monthly" onclick="setBilling('monthly')" class="px-4 py-2 rounded-lg bg-white shadow-sm text-stone-900 transition">Monthly</button>
+          <button id="toggle-annual" onclick="setBilling('annual')" class="px-4 py-2 rounded-lg text-stone-600 hover:text-stone-900 transition">Annual (Save 20%)</button>
+        </div>
+      </div>
+
+      <div class="grid md:grid-cols-3 gap-8 items-stretch">
+        
+        <!-- Tier 1: Free Developer Sandbox -->
+        <div class="bg-white p-8 rounded-3xl border border-stone-200 shadow-sm flex flex-col justify-between">
+          <div>
+            <span class="text-xs font-bold uppercase tracking-wider text-stone-500">Free Tier</span>
+            <h3 class="text-2xl font-bold text-stone-900 mt-2">Developer Sandbox</h3>
+            <p class="text-xs text-stone-600 mt-1">Test and prototype on your local or staging store.</p>
+            <div class="mt-6 mb-6">
+              <span class="text-4xl font-extrabold text-stone-900">$0</span>
+              <span class="text-xs text-stone-500">/ forever</span>
+            </div>
+            <ul class="space-y-3 text-xs text-stone-700">
+              <li class="flex items-center gap-2">&check; Up to 250 test skin scans/month</li>
+              <li class="flex items-center gap-2">&check; Full PubMed scientific citation library</li>
+              <li class="flex items-center gap-2">&check; Web SDK & API Sandbox access</li>
+              <li class="flex items-center gap-2">&check; Community forum support</li>
+            </ul>
+          </div>
+          <button onclick="openAuthModal()" class="mt-8 w-full py-3 px-4 border border-stone-300 hover:border-stone-900 rounded-xl font-semibold text-xs text-stone-800 transition">
+            Start Free Sandbox
+          </button>
+        </div>
+
+        <!-- Tier 2: Growth Brands (Highlighted) -->
+        <div class="bg-white p-8 rounded-3xl border-2 border-brand-600 shadow-xl relative flex flex-col justify-between">
+          <div class="absolute -top-3 left-1/2 -translate-x-1/2 bg-brand-600 text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">
+            Most Popular
+          </div>
+          <div>
+            <span class="text-xs font-bold uppercase tracking-wider text-brand-600">Growing Beauty Brands</span>
+            <h3 class="text-2xl font-bold text-stone-900 mt-2">Growth Tier</h3>
+            <p class="text-xs text-stone-600 mt-1">Live customer camera analysis for Shopify & D2C.</p>
+            <div class="mt-6 mb-6">
+              <span id="growth-price" class="text-4xl font-extrabold text-stone-900">$299</span>
+              <span class="text-xs text-stone-500">/ month</span>
+            </div>
+            <ul class="space-y-3 text-xs text-stone-700">
+              <li class="flex items-center gap-2 font-medium">&check; Up to 10,000 monthly scans</li>
+              <li class="flex items-center gap-2 font-medium">&check; 1-Line Shopify App embed script</li>
+              <li class="flex items-center gap-2 font-medium">&check; Custom catalog SKU mapping</li>
+              <li class="flex items-center gap-2 font-medium">&check; Priority email & Slack support</li>
+            </ul>
+          </div>
+          <button onclick="openModal('demo-modal')" class="mt-8 w-full py-3 px-4 bg-brand-600 hover:bg-brand-700 text-white rounded-xl font-semibold text-xs transition shadow-md">
+            Start 14-Day Free Trial
+          </button>
+        </div>
+
+        <!-- Tier 3: Enterprise -->
+        <div class="bg-white p-8 rounded-3xl border border-stone-200 shadow-sm flex flex-col justify-between">
+          <div>
+            <span class="text-xs font-bold uppercase tracking-wider text-stone-500">Enterprise</span>
+            <h3 class="text-2xl font-bold text-stone-900 mt-2">Global Brands</h3>
+            <p class="text-xs text-stone-600 mt-1">Custom models, high volume, and dedicated SLA.</p>
+            <div class="mt-6 mb-6">
+              <span class="text-4xl font-extrabold text-stone-900">Custom</span>
+            </div>
+            <ul class="space-y-3 text-xs text-stone-700">
+              <li class="flex items-center gap-2">&check; Unlimited monthly face scans</li>
+              <li class="flex items-center gap-2">&check; Custom fine-tuned skin analysis models</li>
+              <li class="flex items-center gap-2">&check; Dedicated Illinois BIPA & GDPR DPA contract</li>
+              <li class="flex items-center gap-2">&check; 99.99% uptime SLA & dedicated engineer</li>
+            </ul>
+          </div>
+          <button onclick="openModal('demo-modal')" class="mt-8 w-full py-3 px-4 bg-stone-900 hover:bg-black text-white rounded-xl font-semibold text-xs transition">
+            Talk to Enterprise Sales
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- 8. FREQUENTLY ASKED QUESTIONS -->
+  <section id="faq" class="py-20 bg-white">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-12">
+        <h2 class="text-3xl font-bold text-stone-900 tracking-tight">Frequently Asked Questions</h2>
+        <p class="mt-2 text-stone-600 text-sm">Direct answers regarding technology, privacy, and store integration.</p>
+      </div>
+
+      <div class="space-y-4">
+        <!-- FAQ 1 -->
+        <div class="border border-stone-200 rounded-2xl p-5">
+          <h3 class="text-sm font-bold text-stone-900 mb-2">How does Aurelune AI analyze skin without saving user photos?</h3>
+          <p class="text-xs text-stone-600 leading-relaxed">
+            The Aurelune engine operates directly in transient device memory (RAM) via WebAssembly. Camera frames are converted into numerical matrix vectors (evaluating surface light reflection, redness, and contrast) and the image is immediately discarded. No facial photos ever hit our database or third-party cloud disks.
+          </p>
+        </div>
+
+        <!-- FAQ 2 -->
+        <div class="border border-stone-200 rounded-2xl p-5">
+          <h3 class="text-sm font-bold text-stone-900 mb-2">Is Aurelune AI considered a medical diagnostic device?</h3>
+          <p class="text-xs text-stone-600 leading-relaxed">
+            No. Aurelune provides purely cosmetic, non-diagnostic hydration and routine recommendations under FDA MoCRA and 21 U.S.C. § 361. It is not designed to diagnose, cure, or mitigate medical skin conditions such as eczema, psoriasis, or melanoma.
+          </p>
+        </div>
+
+        <!-- FAQ 3 -->
+        <div class="border border-stone-200 rounded-2xl p-5">
+          <h3 class="text-sm font-bold text-stone-900 mb-2">How do the PubMed citations work?</h3>
+          <p class="text-xs text-stone-600 leading-relaxed">
+            Every product recommendation links to authentic, peer-reviewed clinical studies indexed on the National Library of Medicine (PubMed). Customers can inspect the exact clinical trial, study methodology, and biochemical mechanism supporting why an ingredient is recommended for their skin profile.
+          </p>
+        </div>
+
+        <!-- FAQ 4 -->
+        <div class="border border-stone-200 rounded-2xl p-5">
+          <h3 class="text-sm font-bold text-stone-900 mb-2">How hard is it to embed into our Shopify store?</h3>
+          <p class="text-xs text-stone-600 leading-relaxed">
+            Integration takes under 15 minutes. You paste a single lightweight JavaScript snippet into your store theme, map your product SKUs to ingredients in our dashboard, and the AI selfie scanner becomes active on your product pages or quiz funnels.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 9. FINAL CALL TO ACTION (CTA 2 OF 2) -->
+  <section class="py-20 bg-gradient-to-br from-brand-900 via-stone-900 to-black text-white text-center">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      <h2 class="text-3xl sm:text-4xl font-extrabold tracking-tight mb-4">
+        Ready to Transform Your Skincare Conversion?
+      </h2>
+      <p class="text-stone-300 text-sm sm:text-base max-w-xl mx-auto mb-8">
+        Join leading beauty brands providing shoppers with personalized, PubMed-validated skincare routines from a single selfie.
+      </p>
+      <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+        <button onclick="openModal('demo-modal')" class="w-full sm:w-auto bg-brand-500 hover:bg-brand-600 text-white font-semibold px-8 py-3.5 rounded-xl shadow-lg transition">
+          Book a Demo
+        </button>
+        <button onclick="openAuthModal()" class="w-full sm:w-auto bg-white/10 hover:bg-white/20 text-white font-semibold px-6 py-3.5 rounded-xl border border-white/20 transition">
+          Try Developer Sandbox
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 10. FOOTER -->
+  <footer class="bg-white border-t border-stone-200 text-stone-600 py-12 text-xs">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-8 mb-8">
+        <div>
+          <span class="font-heading font-bold text-stone-900 text-sm block mb-3">AURELUNE AI</span>
+          <p class="text-stone-500 leading-relaxed">
+            AI Skin Analysis & Personalized Routine Engine for Beauty Brands.
+          </p>
+        </div>
+        <div>
+          <span class="font-bold text-stone-900 block mb-3 uppercase tracking-wider text-[11px]">Product</span>
+          <ul class="space-y-2">
+            <li><a href="#simulator" class="hover:text-stone-900">Live Simulator</a></li>
+            <li><a href="#evidence" class="hover:text-stone-900">PubMed Citations</a></li>
+            <li><a href="#pricing" class="hover:text-stone-900">Pricing Tiers</a></li>
+          </ul>
+        </div>
+        <div>
+          <span class="font-bold text-stone-900 block mb-3 uppercase tracking-wider text-[11px]">Compliance</span>
+          <ul class="space-y-2">
+            <li><a href="javascript:void(0)" onclick="openModal('legal-modal')" class="hover:text-stone-900">Biometric Policy (BIPA)</a></li>
+            <li><a href="javascript:void(0)" onclick="openModal('legal-modal')" class="hover:text-stone-900">MoCRA Disclaimers</a></li>
+            <li><a href="javascript:void(0)" onclick="openModal('legal-modal')" class="hover:text-stone-900">Terms of Service</a></li>
+          </ul>
+        </div>
+        <div>
+          <span class="font-bold text-stone-900 block mb-3 uppercase tracking-wider text-[11px]">Legal Entity</span>
+          <p class="text-stone-500 leading-relaxed">
+            Aurelune Technologies, Inc.<br />
+            Registered Delaware B2B Entity<br />
+            contact@aurelune.ai
+          </p>
+        </div>
+      </div>
+
+      <div class="pt-8 border-t border-stone-100 flex flex-col sm:flex-row items-center justify-between text-stone-400 gap-4">
+        <p>&copy; 2026 Aurelune Technologies, Inc. All rights reserved.</p>
+        <p class="text-[11px]">Non-diagnostic cosmetic tool. Compliant with Illinois BIPA & FDA MoCRA.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ==================== MODALS ==================== -->
+
+  <!-- AUTHENTICATION MODAL (GOOGLE & PHONE SMS) -->
+  <div id="auth-modal" class="fixed inset-0 z-50 hidden bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-md w-full p-6 sm:p-8 shadow-2xl border border-stone-200 relative">
+      <button onclick="closeModal('auth-modal')" class="absolute top-4 right-4 text-stone-400 hover:text-stone-700 text-xl font-bold">&times;</button>
+      
+      <div class="text-center mb-6">
+        <div class="w-10 h-10 rounded-xl bg-brand-600 text-white font-bold flex items-center justify-center mx-auto mb-2">A</div>
+        <h3 class="text-xl font-bold text-stone-900">Sign in to Aurelune AI</h3>
+        <p class="text-xs text-stone-500 mt-1">Access your brand's AI sandbox and API credentials.</p>
+      </div>
+
+      <!-- Auth Method Tabs -->
+      <div class="flex border-b border-stone-200 mb-6 text-xs font-semibold">
+        <button id="tab-google-btn" onclick="switchAuthTab('google')" class="flex-1 pb-3 text-brand-600 border-b-2 border-brand-600">Google Workspace</button>
+        <button id="tab-phone-btn" onclick="switchAuthTab('phone')" class="flex-1 pb-3 text-stone-500 hover:text-stone-800">Phone SMS OTP</button>
+      </div>
+
+      <!-- Tab 1: Google Login -->
+      <div id="auth-tab-google" class="space-y-4">
+        <button onclick="handleGoogleSignIn()" class="w-full border border-stone-300 hover:border-stone-400 bg-white hover:bg-stone-50 py-3 px-4 rounded-xl flex items-center justify-center gap-3 transition text-sm font-semibold text-stone-700 shadow-sm">
+          <svg class="w-5 h-5" viewBox="0 0 24 24"><path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.8-2.4 3.66v3.05h3.9c2.28-2.1 3.645-5.18 3.645-9.15z"/><path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.9-3.05c-1.08.72-2.45 1.16-4.03 1.16-3.1 0-5.73-2.1-6.66-4.92H1.27v3.15C3.25 21.36 7.34 24 12 24z"/><path fill="#FBBC05" d="M5.34 14.28c-.24-.72-.38-1.49-.38-2.28s.14-1.56.38-2.28V6.57H1.27C.46 8.2 0 10.04 0 12s.46 3.8 1.27 5.43l4.07-3.15z"/><path fill="#EA4335" d="M12 4.77c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.34 0 3.25 2.64 1.27 6.57l4.07 3.15c.93-2.82 3.56-4.95 6.66-4.95z"/></svg>
+          Continue with Google
+        </button>
+        <p class="text-[11px] text-stone-500 text-center leading-relaxed">
+          Single Sign-On for authorized beauty brand operators, R&D staff, and e-commerce directors.
+        </p>
+      </div>
+
+      <!-- Tab 2: Phone Number Login -->
+      <div id="auth-tab-phone" class="space-y-4 hidden">
+        <div>
+          <label class="block text-xs font-semibold text-stone-700 mb-1">Mobile Phone Number</label>
+          <div class="flex gap-2">
+            <select class="text-xs bg-stone-50 border border-stone-300 rounded-xl px-2.5 py-2.5">
+              <option value="+1">🇺🇸 +1</option>
+              <option value="+44">🇬🇧 +44</option>
+              <option value="+91">🇮🇳 +91</option>
+              <option value="+33">🇫🇷 +33</option>
+            </select>
+            <input id="phone-input" type="tel" placeholder="555-019-2834" class="flex-1 text-xs bg-stone-50 border border-stone-300 rounded-xl px-3 py-2.5 focus:outline-none focus:border-brand-600" />
+          </div>
+        </div>
+
+        <button onclick="sendSmsOtp()" class="w-full bg-brand-600 hover:bg-brand-700 text-white font-semibold py-2.5 rounded-xl text-xs transition">
+          Send Verification SMS
+        </button>
+
+        <!-- OTP Input (Initially Hidden) -->
+        <div id="otp-section" class="hidden pt-3 border-t border-stone-200">
+          <label class="block text-xs font-semibold text-stone-700 mb-1">Enter 6-Digit Code</label>
+          <input id="otp-input" type="text" maxlength="6" placeholder="849216" class="w-full text-center tracking-widest text-lg font-mono bg-stone-50 border border-stone-300 rounded-xl py-2 focus:outline-none focus:border-brand-600" />
+          <button onclick="verifyOtp()" class="mt-3 w-full bg-stone-900 hover:bg-black text-white font-semibold py-2.5 rounded-xl text-xs transition">
+            Verify & Enter Sandbox
+          </button>
+        </div>
+      </div>
+
+      <div class="mt-6 pt-4 border-t border-stone-100 text-[10px] text-stone-400 text-center">
+        By continuing, you agree to Aurelune's B2B Terms, Illinois BIPA Data Policy, and FDA MoCRA Cosmetic Guidelines.
+      </div>
+    </div>
+  </div>
+
+  <!-- PUBMED CLINICAL PROOF MODAL -->
+  <div id="pubmed-modal" class="fixed inset-0 z-50 hidden bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl border border-stone-200 relative">
+      <button onclick="closeModal('pubmed-modal')" class="absolute top-4 right-4 text-stone-400 hover:text-stone-700 text-xl font-bold">&times;</button>
+      
+      <div class="flex items-center gap-2 mb-3">
+        <span class="px-2.5 py-1 rounded bg-accent-500/10 text-accent-700 font-mono text-[11px] font-bold" id="pubmed-id-badge">PMID: 22052267</span>
+        <span class="text-xs text-stone-500">Peer-Reviewed Clinical Literature</span>
+      </div>
+
+      <h3 id="pubmed-title" class="text-lg font-bold text-stone-900 mb-2 leading-snug">
+        Hyaluronic acid: A key molecule in skin aging and epidermal barrier hydration
+      </h3>
+      
+      <p id="pubmed-journal" class="text-xs text-stone-500 font-mono mb-4">
+        Dermato-Endocrinology • PMC3583886 • Clinical Review
+      </p>
+
+      <div class="bg-stone-50 rounded-2xl p-4 border border-stone-200 text-xs text-stone-700 space-y-2 mb-4 leading-relaxed">
+        <p><strong>Clinical Mechanism:</strong> <span id="pubmed-mechanism">Multi-weight sodium hyaluronate penetrates stratum corneum layers to bind up to 1,000x its molecular weight in water, reducing transepidermal water loss (TEWL).</span></p>
+        <p><strong>Observed Outcome:</strong> <span id="pubmed-outcome">Statistically significant increase in stratum corneum moisture content and skin elasticity within 14–28 days of daily topical cosmetic application.</span></p>
+      </div>
+
+      <div class="flex items-center justify-between text-xs pt-2">
+        <a id="pubmed-link" href="https://pubmed.ncbi.nlm.nih.gov/22052267/" target="_blank" rel="noopener noreferrer" class="text-accent-600 font-semibold hover:underline flex items-center gap-1">
+          <span>Read Study on PubMed.gov</span>
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+        </a>
+        <button onclick="closeModal('pubmed-modal')" class="bg-stone-900 text-white font-semibold px-4 py-2 rounded-xl text-xs">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- BOOK A DEMO MODAL -->
+  <div id="demo-modal" class="fixed inset-0 z-50 hidden bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-md w-full p-6 sm:p-8 shadow-2xl border border-stone-200 relative">
+      <button onclick="closeModal('demo-modal')" class="absolute top-4 right-4 text-stone-400 hover:text-stone-700 text-xl font-bold">&times;</button>
+      
+      <div class="text-center mb-6">
+        <h3 class="text-xl font-bold text-stone-900">Book an Enterprise Demo</h3>
+        <p class="text-xs text-stone-500 mt-1">See how Aurelune embeds onto your beauty brand's Shopify store.</p>
+      </div>
+
+      <form onsubmit="handleDemoSubmit(event)" class="space-y-4 text-xs">
+        <div>
+          <label class="block font-semibold text-stone-700 mb-1">Work Email</label>
+          <input type="email" required placeholder="alex@beautybrand.com" class="w-full bg-stone-50 border border-stone-300 rounded-xl px-3 py-2.5 focus:outline-none focus:border-brand-600" />
+        </div>
+        <div>
+          <label class="block font-semibold text-stone-700 mb-1">Brand Name & Storefront URL</label>
+          <input type="text" required placeholder="Lumière Skincare (lumiereskin.com)" class="w-full bg-stone-50 border border-stone-300 rounded-xl px-3 py-2.5 focus:outline-none focus:border-brand-600" />
+        </div>
+        <div>
+          <label class="block font-semibold text-stone-700 mb-1">Monthly Online Store Visitors</label>
+          <select class="w-full bg-stone-50 border border-stone-300 rounded-xl px-3 py-2.5 focus:outline-none focus:border-brand-600">
+            <option>10,000 – 50,000 visitors/month</option>
+            <option>50,000 – 200,000 visitors/month</option>
+            <option>200,000+ visitors/month</option>
+          </select>
+        </div>
+        <button type="submit" class="w-full bg-brand-600 hover:bg-brand-700 text-white font-semibold py-3 rounded-xl transition text-sm shadow-md">
+          Request Tailored Walkthrough
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- LEGAL & COMPLIANCE MODAL -->
+  <div id="legal-modal" class="fixed inset-0 z-50 hidden bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-xl w-full p-6 sm:p-8 shadow-2xl border border-stone-200 relative max-h-[80vh] overflow-y-auto">
+      <button onclick="closeModal('legal-modal')" class="absolute top-4 right-4 text-stone-400 hover:text-stone-700 text-xl font-bold">&times;</button>
+      
+      <h3 class="text-lg font-bold text-stone-900 mb-4">Aurelune Regulatory & Biometric Policy</h3>
+      
+      <div class="space-y-4 text-xs text-stone-600 leading-relaxed">
+        <section>
+          <h4 class="font-bold text-stone-900 mb-1">1. FDA MoCRA & 21 U.S.C. § 361 Non-Diagnostic Boundary</h4>
+          <p>Aurelune AI is a software recommendation engine intended strictly for cosmetic skin appearance evaluation. It does not provide medical advice, diagnosis, or clinical treatments for diseases such as rosacea, severe cystic acne, eczema, or skin cancers.</p>
+        </section>
+
+        <section>
+          <h4 class="font-bold text-stone-900 mb-1">2. Illinois BIPA (740 ILCS 14/) & Biometric Data Handling</h4>
+          <p>Aurelune does not store, sell, lease, or monetize customer biometric identifiers. All video frames captured through front-facing cameras are converted in transient client memory (RAM) into ephemeral mathematical vectors and immediately purged upon session completion.</p>
+        </section>
+
+        <section>
+          <h4 class="font-bold text-stone-900 mb-1">3. Peer-Reviewed Ingredient Citations</h4>
+          <p>Scientific citations from the National Library of Medicine (PubMed) are provided for cosmetic ingredient education. Finished consumer cosmetic products may vary depending on concentration, delivery vehicles, and skin compatibility.</p>
+        </section>
+      </div>
+
+      <div class="mt-6 pt-4 border-t border-stone-100 text-right">
+        <button onclick="closeModal('legal-modal')" class="bg-stone-900 text-white font-semibold px-4 py-2 rounded-xl text-xs">Understood</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- JAVASCRIPT LOGIC -->
+  <script>
+    // PubMed Data Registry
+    const pubmedRegistry = {
+      'ha': {
+        pmid: '22052267',
+        title: 'Hyaluronic acid: A key molecule in skin aging and epidermal barrier hydration',
+        journal: 'Dermato-Endocrinology • PMC3583886 • Clinical Review',
+        mechanism: 'Multi-weight sodium hyaluronate penetrates stratum corneum layers to bind water molecules, significantly reducing transepidermal water loss (TEWL).',
+        outcome: 'Statistically significant increase in stratum corneum moisture content and skin elasticity observed in topical cosmetic trials.',
+        url: 'https://pubmed.ncbi.nlm.nih.gov/22052267/'
+      },
+      'ceramide': {
+        pmid: '12553851',
+        title: 'Role of ceramides in stratum corneum lipid barrier maintenance and skin hydration',
+        journal: 'Journal of Investigative Dermatology • PMID: 12553851',
+        mechanism: 'Ceramide NP mimics intercellular lipid lamellae, repairing micro-fractures in the physical skin barrier to resist environmental irritants.',
+        outcome: 'Demonstrated rapid replenishment of damaged skin barrier lipids, improving hydration retention over placebo controls.',
+        url: 'https://pubmed.ncbi.nlm.nih.gov/12553851/'
+      }
+    };
+
+    // Modal Helpers
+    function openModal(id) {
+      document.getElementById(id).classList.remove('hidden');
+    }
+    function closeModal(id) {
+      document.getElementById(id).classList.add('hidden');
+    }
+    function openAuthModal() {
+      openModal('auth-modal');
+    }
+
+    // PubMed Inspector Modal
+    function showPubMedProof(key) {
+      const data = pubmedRegistry[key];
+      if (!data) return;
+      document.getElementById('pubmed-id-badge').innerText = `PMID: ${data.pmid}`;
+      document.getElementById('pubmed-title').innerText = data.title;
+      document.getElementById('pubmed-journal').innerText = data.journal;
+      document.getElementById('pubmed-mechanism').innerText = data.mechanism;
+      document.getElementById('pubmed-outcome').innerText = data.outcome;
+      document.getElementById('pubmed-link').href = data.url;
+      openModal('pubmed-modal');
+    }
+
+    // Auth Switcher
+    function switchAuthTab(tab) {
+      const googleBtn = document.getElementById('tab-google-btn');
+      const phoneBtn = document.getElementById('tab-phone-btn');
+      const googleSec = document.getElementById('auth-tab-google');
+      const phoneSec = document.getElementById('auth-tab-phone');
+
+      if (tab === 'google') {
+        googleBtn.className = 'flex-1 pb-3 text-brand-600 border-b-2 border-brand-600';
+        phoneBtn.className = 'flex-1 pb-3 text-stone-500 hover:text-stone-800';
+        googleSec.classList.remove('hidden');
+        phoneSec.classList.add('hidden');
+      } else {
+        phoneBtn.className = 'flex-1 pb-3 text-brand-600 border-b-2 border-brand-600';
+        googleBtn.className = 'flex-1 pb-3 text-stone-500 hover:text-stone-800';
+        phoneSec.classList.remove('hidden');
+        googleSec.classList.add('hidden');
+      }
+    }
+
+    // Simulated Google Sign-In
+    function handleGoogleSignIn() {
+      closeModal('auth-modal');
+      const navBtn = document.getElementById('auth-nav-btn');
+      navBtn.innerHTML = `
+        <div class="flex items-center gap-2 bg-stone-100 px-3 py-1.5 rounded-full border border-stone-200">
+          <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+          <span class="text-xs font-semibold text-stone-800">Demo Brand R&D</span>
+        </div>
+      `;
+      alert('Signed in successfully as Demo Beauty Brand Tenant.');
+    }
+
+    // Simulated Phone SMS OTP Flow
+    let currentCode = '849216';
+    function sendSmsOtp() {
+      const phone = document.getElementById('phone-input').value;
+      if (!phone) {
+        alert('Please enter a phone number.');
+        return;
+      }
+      currentCode = Math.floor(100000 + Math.random() * 900000).toString();
+      document.getElementById('sms-code-preview').innerText = `Your Aurelune verification code is ${currentCode}.`;
+      document.getElementById('otp-section').classList.remove('hidden');
+      
+      // Trigger in-app SMS banner
+      const banner = document.getElementById('sms-banner');
+      banner.classList.remove('hidden');
+      banner.classList.remove('-translate-y-4');
+    }
+
+    function closeSmsBanner() {
+      document.getElementById('sms-banner').classList.add('hidden');
+    }
+
+    function autofillOtp() {
+      document.getElementById('otp-input').value = currentCode;
+      closeSmsBanner();
+      verifyOtp();
+    }
+
+    function verifyOtp() {
+      const entered = document.getElementById('otp-input').value;
+      if (entered === currentCode) {
+        closeModal('auth-modal');
+        closeSmsBanner();
+        const navBtn = document.getElementById('auth-nav-btn');
+        navBtn.innerHTML = `
+          <div class="flex items-center gap-2 bg-stone-100 px-3 py-1.5 rounded-full border border-stone-200">
+            <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+            <span class="text-xs font-semibold text-stone-800">Brand +1 Verified</span>
+          </div>
+        `;
+        alert('Phone verified. Welcome to the Aurelune Developer Sandbox.');
+      } else {
+        alert('Invalid code. Please try again.');
+      }
+    }
+
+    // Pricing Billing Toggle
+    function setBilling(cycle) {
+      const monthlyBtn = document.getElementById('toggle-monthly');
+      const annualBtn = document.getElementById('toggle-annual');
+      const priceText = document.getElementById('growth-price');
+
+      if (cycle === 'annual') {
+        annualBtn.className = 'px-4 py-2 rounded-lg bg-white shadow-sm text-stone-900 transition';
+        monthlyBtn.className = 'px-4 py-2 rounded-lg text-stone-600 hover:text-stone-900 transition';
+        priceText.innerText = '$239';
+      } else {
+        monthlyBtn.className = 'px-4 py-2 rounded-lg bg-white shadow-sm text-stone-900 transition';
+        annualBtn.className = 'px-4 py-2 rounded-lg text-stone-600 hover:text-stone-900 transition';
+        priceText.innerText = '$299';
+      }
+    }
+
+    // Demo Request Handler
+    function handleDemoSubmit(e) {
+      e.preventDefault();
+      closeModal('demo-modal');
+      alert('Thank you! Your brand consultation and demo access have been requested.');
+    }
+
+    // Re-run Simulator Animation
+    function rerunSimulator() {
+      const line = document.getElementById('scan-line');
+      line.style.animation = 'none';
+      setTimeout(() => {
+        line.style.animation = 'scanline 2.2s ease-in-out infinite alternate';
+      }, 50);
+    }
+  </script>
+</body>
+</html>
